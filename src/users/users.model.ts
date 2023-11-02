@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import { RegularBudget } from 'src/budget/models/regualar-budget.model';
+import { SingularBudget } from 'src/budget/models/singular-budget.model';
 import { Note } from 'src/notes/notes.model';
 
 interface UserCreationAttrs {
@@ -28,4 +30,10 @@ export class User extends Model<User, UserCreationAttrs> {
 
   @HasMany(() => Note)
   notes: Note[];
+
+  @HasMany(() => RegularBudget)
+  regularBudget: RegularBudget[];
+
+  @HasMany(() => SingularBudget)
+  singularBudget: SingularBudget[];
 }

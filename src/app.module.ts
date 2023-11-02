@@ -6,6 +6,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { NotesModule } from './notes/notes.module';
 import { User } from './users/users.model';
 import { Note } from './notes/notes.model';
+import { BudgetModule } from './budget/budget.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { Note } from './notes/notes.model';
     AuthModule,
     UsersModule,
     NotesModule,
+    BudgetModule,
   ],
 })
 export class AppModule {}
