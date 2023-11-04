@@ -22,12 +22,16 @@ export class RegularBudget extends Model<RegularBudget, RegularBudgetCreationAtt
   id: number;
 
   @ApiProperty({ example: '1000', description: 'Сумма' })
-  @Column({ type: DataType.NUMBER, allowNull: false })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   sum: number;
 
   @ApiProperty({ example: 'true', description: 'Доход/расход' })
   @Column({ type: DataType.BOOLEAN, allowNull: false })
   isIncome: boolean;
+
+  @ApiProperty({ example: 'Стипа)))', description: 'Название' })
+  @Column({ type: DataType.STRING, allowNull: false })
+  name: string;
 
   @ApiProperty({ example: '1', description: 'ID период' })
   @ForeignKey(() => Period)
@@ -37,7 +41,7 @@ export class RegularBudget extends Model<RegularBudget, RegularBudgetCreationAtt
   @ForeignKey(() => User)
   userId: number;
 
-  @BelongsTo(() => Period, 'periodID')
+  @BelongsTo(() => Period, 'periodId')
   period: Period;
 
   @BelongsTo(() => User, 'userId')

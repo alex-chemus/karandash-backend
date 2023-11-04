@@ -10,8 +10,14 @@ import { GetNoteDto } from './dto/get-note.dto';
 export class NotesService {
   constructor(@InjectModel(Note) private readonly notesRepo: typeof Note) {}
 
+  private userId: number
+
+  setUserId(userId: number) {
+    this.userId = userId
+  }
+
   async createNote(noteDto: CreateNoteDto) {
-    return await this.notesRepo.create(noteDto);
+    return await this.notesRepo.create({ ...noteDto, userId: this.userId });
   }
 
   async getNotesInDateRange(rangeDto: DateRangeDto) {
@@ -21,11 +27,12 @@ export class NotesService {
           [Op.gte]: rangeDto.start,
           [Op.lte]: rangeDto.end,
         },
+        userId: this.userId
       },
     });
   }
 
   async getNoteById({ id }: GetNoteDto) {
-    return await this.notesRepo.findOne({ where: { id } });
+    return await this.notesRepo.findOne({ where: { id, userId: this.userId } });
   }
 }

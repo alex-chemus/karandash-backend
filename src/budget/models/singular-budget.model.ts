@@ -9,7 +9,7 @@ interface SingularBudgetCreationAttrs {
   userId: number;
 }
 
-@Table({ tableName: 'regular budget', timestamps: false })
+@Table({ tableName: 'singular budget', timestamps: false })
 export class SingularBudget extends Model<SingularBudget, SingularBudgetCreationAttrs> {
   @ApiProperty({ example: '1', description: 'ID записи' })
   @Column({
@@ -21,7 +21,7 @@ export class SingularBudget extends Model<SingularBudget, SingularBudgetCreation
   id: number;
 
   @ApiProperty({ example: '1000', description: 'Сумма' })
-  @Column({ type: DataType.NUMBER, allowNull: false })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   sum: number;
 
   @ApiProperty({ example: 'true', description: 'Доход/расход' })
@@ -31,6 +31,10 @@ export class SingularBudget extends Model<SingularBudget, SingularBudgetCreation
   @ApiProperty({ example: '1', description: 'Дата' })
   @Column({ type: DataType.DATE, allowNull: false })
   date: number;
+
+  @ApiProperty({ example: 'Стипа)))', description: 'Название' })
+  @Column({ type: DataType.STRING, allowNull: false })
+  name: string;
 
   @ApiProperty({ example: '1', description: 'ID пользователя' })
   @ForeignKey(() => User)

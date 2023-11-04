@@ -20,3 +20,9 @@ export class Period extends Model<Period, PeriodCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   title: string;
 }
+
+export enum Periods {
+  month = 1,
+  quarter = 2,
+  year = 3,
+}

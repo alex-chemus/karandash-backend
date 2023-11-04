@@ -15,6 +15,7 @@ async function bootstrap() {
     .setTitle('karandash')
     .setDescription('karandash')
     .setVersion('1.0.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config, {
     ignoreGlobalPrefix: true

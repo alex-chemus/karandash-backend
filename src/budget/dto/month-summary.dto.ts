@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber } from "class-validator";
 
-export class MonthSummary {
+export class MonthSummaryDto {
   @ApiProperty({ example: '1', description: 'Месяц (1-12)' })
   @IsNumber()
   readonly month: number;
