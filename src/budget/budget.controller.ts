@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BudgetService } from './budget.service';
 import { AddSingularBudgetItemDto } from './dto/add-singular-budget-item.dto';
@@ -8,6 +8,7 @@ import { SingularBudget } from './models/singular-budget.model';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RegularBudget } from './models/regualar-budget.model';
 import { MonthSummaryDto } from './dto/month-summary.dto';
+import { Period } from './models/period.model';
 
 @ApiTags('Budget')
 @Controller('budget')
@@ -58,5 +59,15 @@ export class BudgetController {
   async getPlainYearSummary(@Body() { year }: GetYearSummaryDto, @Req() req) {
     this.budgetService.setUserId(req.user.id)
     return await this.budgetService.getPlainYearSummary(year)
+  }
+
+  @ApiOperation({ summary: 'Периоды регулярный операций', operationId: 'getPeriods' })
+  @ApiResponse({ status: 200, type: [Period] })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @Get('get-periods')
+  async getPeriods() {
+    return await this.budgetService.getPeriods()
   }
 }
