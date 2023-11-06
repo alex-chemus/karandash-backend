@@ -1,0 +1,8 @@
+import { ApiProperty } from "@nestjs/swagger";
+import { IsNumber } from "class-validator";
+
+export class YearDto {
+  @ApiProperty({ example: '2023', description: 'Год' })
+  @IsNumber()
+  year: number;
+}

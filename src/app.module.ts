@@ -10,6 +10,8 @@ import { BudgetModule } from './budget/budget.module';
 import { Period } from './budget/models/period.model';
 import { RegularBudget } from './budget/models/regualar-budget.model';
 import { SingularBudget } from './budget/models/singular-budget.model';
+import { GoalsModule } from './goals/goals.module';
+import { Goal } from './goals/goals.model';
 
 @Module({
   imports: [
@@ -23,13 +25,14 @@ import { SingularBudget } from './budget/models/singular-budget.model';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Note, Period, RegularBudget, SingularBudget],
+      models: [User, Note, Period, RegularBudget, SingularBudget, Goal],
       autoLoadModels: true,
     }),
     AuthModule,
     UsersModule,
     NotesModule,
     BudgetModule,
+    GoalsModule,
   ],
 })
 export class AppModule {}
