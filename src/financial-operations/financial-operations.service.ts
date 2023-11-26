@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Period, Periods } from './models/period.model';
-import { RegularBudget } from './models/regualar-budget.model';
-import { SingularBudget } from './models/singular-budget.model';
-import { AddSingularBudgetItemDto } from './dto/add-singular-budget-item.dto';
-import { AddRegularBudgetItemDto } from './dto/add-regular-budget-item.dto';
+import { RegularFinancialOperation } from './models/regualar-financial-operation.model';
+import { SingularFinancialOperation } from './models/singular-financial-operation.model';
+import { AddSingularFinancialOperationDto } from './dto/add-singular-financial-operation.dto';
+import { AddRegularFinancialOperationDto } from './dto/add-regular-financial-operation.dto';
 import { MonthSummaryDto } from './dto/month-summary.dto';
 import { Op } from 'sequelize';
 import * as dayjs from 'dayjs'
 
 @Injectable()
-export class BudgetService {
+export class FinancialOperationsService {
   constructor(
     @InjectModel(Period) private readonly periodsRepo: typeof Period,
-    @InjectModel(RegularBudget) private readonly regularBudgetRepo: typeof RegularBudget,
-    @InjectModel(SingularBudget) private readonly singularBudgetRepo: typeof SingularBudget,
+    @InjectModel(RegularFinancialOperation) private readonly regularFinancialOperationsRepo: typeof RegularFinancialOperation,
+    @InjectModel(SingularFinancialOperation) private readonly singularFinancialOperationsRepo: typeof SingularFinancialOperation,
   ) {}
 
   private userId: number;
@@ -23,22 +23,22 @@ export class BudgetService {
     this.userId = userId
   }
 
-  async addSingularBudgetItem(budgetDto: AddSingularBudgetItemDto) {
-    return await this.singularBudgetRepo.create({ ...budgetDto, userId: this.userId })
+  async addSingularFinancialOperation(financialOperationDto: AddSingularFinancialOperationDto) {
+    return await this.singularFinancialOperationsRepo.create({ ...financialOperationDto, userId: this.userId })
   }
 
-  async addRegularBudgetItem(budgetDto: AddRegularBudgetItemDto) {
-    return await this.regularBudgetRepo.create({ ...budgetDto, userId: this.userId })
+  async addRegularFinancialOperation(financialOperationDto: AddRegularFinancialOperationDto) {
+    return await this.regularFinancialOperationsRepo.create({ ...financialOperationDto, userId: this.userId })
   }
 
   async getPeriods() {
     return await this.periodsRepo.findAll();
   }
 
-  private async getMonthSingularBudgetSummary(month: number, year: number) {
+  private async getMonthSingularFinancialOperationsSummary(month: number, year: number) {
     const monthObject = dayjs(`${month}-1-${year}`, 'M-D-YYYY')
 
-    const singularIncome = await this.singularBudgetRepo.sum('sum', {
+    const singularIncome = await this.singularFinancialOperationsRepo.sum('sum', {
       where: {
         date: {
           [Op.gte]: monthObject.startOf('month').format('YYYY-MM-DD'),
@@ -49,7 +49,7 @@ export class BudgetService {
       }
     })
 
-    const singularExpense = await this.singularBudgetRepo.sum('sum', {
+    const singularExpense = await this.singularFinancialOperationsRepo.sum('sum', {
       where: {
         date: {
           [Op.gte]: monthObject.startOf('month').format('YYYY-MM-DD'),
@@ -63,8 +63,8 @@ export class BudgetService {
     return { singularIncome, singularExpense }
   }
 
-  private async getMonthRegularBudgetSummary(month: number) {
-    const regularBudgetItems = await this.regularBudgetRepo.findAll({
+  private async getMonthRegularFinancialOperationsSummary(month: number) {
+    const regularFinancialOperations = await this.regularFinancialOperationsRepo.findAll({
       where: {
         userId: this.userId
       },
@@ -74,30 +74,30 @@ export class BudgetService {
     let regularIncome = 0 // eslint-disable-line prefer-const
     let regularExpense = 0 // eslint-disable-line prefer-const
 
-    regularBudgetItems.filter(item => item.isIncome).forEach(budgetItem => {
-      switch (budgetItem.period.id) {
+    regularFinancialOperations.filter(item => item.isIncome).forEach(item => {
+      switch (item.period.id) {
         case Periods.month:
-          regularIncome += budgetItem.sum
+          regularIncome += item.sum
           break
         case Periods.quarter:
-          if ([3, 6, 9, 12].includes(month)) regularIncome += budgetItem.sum
+          if ([3, 6, 9, 12].includes(month)) regularIncome += item.sum
           break
         case Periods.year:
-          if (month === 12) regularIncome += budgetItem.sum
+          if (month === 12) regularIncome += item.sum
           break
       }
     })
 
-    regularBudgetItems.filter(item => !item.isIncome).forEach(budgetItem => {
-      switch (budgetItem.period.id) {
+    regularFinancialOperations.filter(item => !item.isIncome).forEach(item => {
+      switch (item.period.id) {
         case Periods.month:
-          regularExpense += budgetItem.sum
+          regularExpense += item.sum
           break
         case Periods.quarter:
-          if ([3, 6, 9, 12].includes(month)) regularExpense += budgetItem.sum
+          if ([3, 6, 9, 12].includes(month)) regularExpense += item.sum
           break
         case Periods.year:
-          if (month === 12) regularExpense += budgetItem.sum
+          if (month === 12) regularExpense += item.sum
           break
       }
     })
@@ -106,8 +106,8 @@ export class BudgetService {
   }
 
   private async getAggregatedMonthSummary(month: number, year: number, prevSummary?: MonthSummaryDto) {
-    const { singularIncome, singularExpense } = await this.getMonthSingularBudgetSummary(month, year)
-    const { regularIncome, regularExpense } = await this.getMonthRegularBudgetSummary(month)
+    const { singularIncome, singularExpense } = await this.getMonthSingularFinancialOperationsSummary(month, year)
+    const { regularIncome, regularExpense } = await this.getMonthRegularFinancialOperationsSummary(month)
 
     const income = singularIncome + regularIncome + (prevSummary?.income ?? 0)
     const expense = singularExpense + regularExpense + (prevSummary?.expense ?? 0)
@@ -126,8 +126,8 @@ export class BudgetService {
   }
 
   private async getPlainMonthSummary(month: number, year: number) {
-    const { singularIncome, singularExpense } = await this.getMonthSingularBudgetSummary(month, year)
-    const { regularIncome, regularExpense } = await this.getMonthRegularBudgetSummary(month)
+    const { singularIncome, singularExpense } = await this.getMonthSingularFinancialOperationsSummary(month, year)
+    const { regularIncome, regularExpense } = await this.getMonthRegularFinancialOperationsSummary(month)
 
     const income = singularIncome + regularIncome
     const expense = singularExpense + regularExpense

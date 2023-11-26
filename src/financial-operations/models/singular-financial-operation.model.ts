@@ -2,15 +2,15 @@ import { ApiProperty } from "@nestjs/swagger";
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
 import { User } from "src/users/users.model";
 
-interface SingularBudgetCreationAttrs {
+interface SingularFinancialOperationCreationAttrs {
   sum: number;
   isIncome: boolean;
   date: string;
   userId: number;
 }
 
-@Table({ tableName: 'singular budget', timestamps: false })
-export class SingularBudget extends Model<SingularBudget, SingularBudgetCreationAttrs> {
+@Table({ tableName: 'singular financial operation', timestamps: false })
+export class SingularFinancialOperation extends Model<SingularFinancialOperation, SingularFinancialOperationCreationAttrs> {
   @ApiProperty({ example: '1', description: 'ID записи' })
   @Column({
     type: DataType.INTEGER,

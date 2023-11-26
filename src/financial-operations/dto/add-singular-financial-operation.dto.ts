@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsNumber, IsString } from "class-validator";
 
-export class AddRegularBudgetItemDto {
+export class AddSingularFinancialOperationDto {
   @ApiProperty({ example: '1000', description: 'Сумма' })
   @IsNumber()
   readonly sum: number;
@@ -10,9 +10,9 @@ export class AddRegularBudgetItemDto {
   @IsBoolean({ message: 'Должно быть строкой' })
   readonly isIncome: boolean;
 
-  @IsNumber()
-  @ApiProperty({ example: '1', description: 'ID периода' })
-  readonly periodId: number;
+  @IsString({ message: 'Должно быть датой в формате YYYY-MM-DD' })
+  @ApiProperty({ example: 'YYYY-MM-DD', description: 'Дата' })
+  readonly date: string;
 
   @IsString({ message: 'Должно быть строкой' })
   @ApiProperty({ example: 'Стипа)))', description: 'Название' })

@@ -3,15 +3,15 @@ import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize
 import { Period } from "./period.model";
 import { User } from "src/users/users.model";
 
-interface RegularBudgetCreationAttrs {
+interface RegularFinancialOperationCreationAttrs {
   sum: number;
   isIncome: boolean;
   periodId: number;
   userId: number;
 }
 
-@Table({ tableName: 'regular budget', timestamps: false })
-export class RegularBudget extends Model<RegularBudget, RegularBudgetCreationAttrs> {
+@Table({ tableName: 'regular financial operations', timestamps: false })
+export class RegularFinancialOperation extends Model<RegularFinancialOperation, RegularFinancialOperationCreationAttrs> {
   @ApiProperty({ example: '1', description: 'ID записи' })
   @Column({
     type: DataType.INTEGER,

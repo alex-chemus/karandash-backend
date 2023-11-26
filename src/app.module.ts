@@ -6,10 +6,10 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { NotesModule } from './notes/notes.module';
 import { User } from './users/users.model';
 import { Note } from './notes/notes.model';
-import { BudgetModule } from './budget/budget.module';
-import { Period } from './budget/models/period.model';
-import { RegularBudget } from './budget/models/regualar-budget.model';
-import { SingularBudget } from './budget/models/singular-budget.model';
+import { FinancialOperationsModule } from './financial-operations/financial-operations.module';
+import { Period } from './financial-operations/models/period.model';
+import { RegularFinancialOperation } from './financial-operations/models/regualar-financial-operation.model';
+import { SingularFinancialOperation } from './financial-operations/models/singular-financial-operation.model';
 import { GoalsModule } from './goals/goals.module';
 import { Goal } from './goals/goals.model';
 
@@ -25,13 +25,13 @@ import { Goal } from './goals/goals.model';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User, Note, Period, RegularBudget, SingularBudget, Goal],
+      models: [User, Note, Period, RegularFinancialOperation, SingularFinancialOperation, Goal],
       autoLoadModels: true,
     }),
     AuthModule,
     UsersModule,
     NotesModule,
-    BudgetModule,
+    FinancialOperationsModule,
     GoalsModule,
   ],
 })
