@@ -9,6 +9,8 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { RegularFinancialOperation } from './models/regualar-financial-operation.model';
 import { MonthSummaryDto } from './dto/month-summary.dto';
 import { Period } from './models/period.model';
+import { GetMonthOperations } from './dto/get-month-operations.dto';
+import { OperationsListItem } from './dto/operations-list-item.dto';
 
 @ApiTags('Financial operations')
 @Controller('financial-operations')
@@ -69,5 +71,16 @@ export class FinancialOperationsController {
   @Get('get-periods')
   async getPeriods() {
     return await this.financialOperationsService.getPeriods()
+  }
+
+  @ApiOperation({ summary: 'Все фин. операции за указанный месяц', operationId: 'getAllOperationsInMonth' })
+  @ApiResponse({ status: 200, type: [OperationsListItem] })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @Post('get-operations-in-month')
+  async getAllOperationsInMonth(@Body() dto: GetMonthOperations, @Req() req) {
+    this.financialOperationsService.setUserId(req.user.id)
+    return await this.financialOperationsService.getAllMonthOperations(dto)
   }
 }

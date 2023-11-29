@@ -8,6 +8,8 @@ import { AddRegularFinancialOperationDto } from './dto/add-regular-financial-ope
 import { MonthSummaryDto } from './dto/month-summary.dto';
 import { Op } from 'sequelize';
 import * as dayjs from 'dayjs'
+import { GetMonthOperations } from './dto/get-month-operations.dto';
+import { OperationsListItem } from './dto/operations-list-item.dto';
 
 @Injectable()
 export class FinancialOperationsService {
@@ -65,9 +67,7 @@ export class FinancialOperationsService {
 
   private async getMonthRegularFinancialOperationsSummary(month: number) {
     const regularFinancialOperations = await this.regularFinancialOperationsRepo.findAll({
-      where: {
-        userId: this.userId
-      },
+      where: { userId: this.userId },
       include: [Period]
     });
 
@@ -143,5 +143,45 @@ export class FinancialOperationsService {
       summary.push(await this.getPlainMonthSummary(i, year))
 
     return summary
+  }
+
+  async getAllMonthOperations(dto: GetMonthOperations): Promise<OperationsListItem[]> {
+    const monthObject = dayjs(`${dto.month}-1-${dto.year}`, 'M-D-YYYY')
+
+    const singularOperations = await this.singularFinancialOperationsRepo.findAll({
+      where: {
+        date: {
+          [Op.gte]: monthObject.startOf('month').format('YYYY-MM-DD'),
+          [Op.lte]: monthObject.endOf('month').format('YYYY-MM-DD')
+        },
+        userId: this.userId
+      }
+    })
+
+    const allRegularOperations = await this.regularFinancialOperationsRepo.findAll({
+      where: { userId: this.userId }
+    })
+
+    const regularOperations = allRegularOperations.filter(operation => {
+      switch (operation.periodId) {
+        case Periods.month:
+          return true
+        case Periods.quarter:
+          return [3, 6, 9, 12].includes(dto.month) 
+        case Periods.year:
+          return dto.month === 12
+        default: return false
+      }
+    })
+
+    return [...singularOperations, ...regularOperations].map((operation, index) => {
+      return {
+        id: index,
+        isIncome: operation.isIncome,
+        name: operation.name,
+        sum: operation.sum,
+        operationType: operation instanceof RegularFinancialOperation ? 'regular' : 'singular'
+      }
+    })
   }
 }
