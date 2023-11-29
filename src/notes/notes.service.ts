@@ -4,7 +4,7 @@ import { Note } from './notes.model';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { Op } from 'sequelize';
 import { DateRangeDto } from './dto/date-range.dto';
-import { GetNoteDto } from './dto/get-note.dto';
+import { NoteIdDto } from './dto/note-id.dto';
 
 @Injectable()
 export class NotesService {
@@ -32,7 +32,11 @@ export class NotesService {
     });
   }
 
-  async getNoteById({ id }: GetNoteDto) {
+  async getNoteById({ id }: NoteIdDto) {
     return await this.notesRepo.findOne({ where: { id, userId: this.userId } });
+  }
+
+  async deleteNoteById({ id }: NoteIdDto) {
+    await this.notesRepo.destroy({ where: { id, userId: this.userId } });
   }
 }
