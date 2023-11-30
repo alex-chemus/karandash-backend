@@ -6,6 +6,7 @@ import { NoteIdDto } from './dto/note-id.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Note } from './notes.model';
+import { EditNoteDto } from './dto/edit-note.dto';
 
 @ApiTags('Notes')
 @Controller('notes')
@@ -56,5 +57,16 @@ export class NotesController {
   async deleteNoteById(@Body() noteDto: NoteIdDto, @Req() req) {
     this.notesService.setUserId(req.user.id)
     return this.notesService.deleteNoteById(noteDto)
+  }
+
+  @ApiOperation({ summary: 'Редактировать заметку', operationId: 'editNote' })
+  @ApiResponse({ status: 200, type: Note })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @Post('edit-note')
+  async editNote(@Body() notedto: EditNoteDto, @Req() req) {
+    this.notesService.setUserId(req.user.id)
+    return this.notesService.editNote(notedto)
   }
 }

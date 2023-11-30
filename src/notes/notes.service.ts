@@ -5,6 +5,7 @@ import { CreateNoteDto } from './dto/create-note.dto';
 import { Op } from 'sequelize';
 import { DateRangeDto } from './dto/date-range.dto';
 import { NoteIdDto } from './dto/note-id.dto';
+import { EditNoteDto } from './dto/edit-note.dto';
 
 @Injectable()
 export class NotesService {
@@ -38,5 +39,14 @@ export class NotesService {
 
   async deleteNoteById({ id }: NoteIdDto) {
     await this.notesRepo.destroy({ where: { id, userId: this.userId } });
+  }
+
+  async editNote(noteDto: EditNoteDto) {
+    const [affectedRows] = await this.notesRepo.update(noteDto, {
+      where: {
+        id: noteDto.id
+      }
+    })
+    return Boolean(affectedRows)
   }
 }
