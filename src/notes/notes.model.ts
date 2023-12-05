@@ -4,9 +4,11 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
 } from 'sequelize-typescript';
+import { SingularFinancialOperation } from 'src/financial-operations/models/singular-financial-operation.model';
 import { User } from 'src/users/users.model';
 
 interface NoteCreationAttrs {
@@ -45,4 +47,7 @@ export class Note extends Model<Note, NoteCreationAttrs> {
 
   @BelongsTo(() => User, 'userId')
   user: User;
+
+  @HasMany(() => SingularFinancialOperation)
+  singularFinancialOperations: SingularFinancialOperation[]
 }

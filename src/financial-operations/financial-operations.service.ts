@@ -10,6 +10,7 @@ import { Op } from 'sequelize';
 import * as dayjs from 'dayjs'
 import { GetMonthOperations } from './dto/get-month-operations.dto';
 import { OperationsListItem } from './dto/operations-list-item.dto';
+import { IdDto } from 'src/shared/dto/id.dto';
 
 @Injectable()
 export class FinancialOperationsService {
@@ -183,5 +184,17 @@ export class FinancialOperationsService {
         operationType: operation instanceof RegularFinancialOperation ? 'regular' : 'singular'
       }
     })
+  }
+
+  async getOperationsByNote({ id }: IdDto) {
+    return await this.singularFinancialOperationsRepo.findAll({
+      where: {
+        noteId: id
+      }
+    })
+  }
+
+  async deleteSingularOperation({ id }: IdDto) {
+    return (await this.singularFinancialOperationsRepo.destroy({ where: { id } })) > 0
   }
 }

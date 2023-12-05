@@ -11,6 +11,7 @@ import { MonthSummaryDto } from './dto/month-summary.dto';
 import { Period } from './models/period.model';
 import { GetMonthOperations } from './dto/get-month-operations.dto';
 import { OperationsListItem } from './dto/operations-list-item.dto';
+import { IdDto } from 'src/shared/dto/id.dto';
 
 @ApiTags('Financial operations')
 @Controller('financial-operations')
@@ -82,5 +83,27 @@ export class FinancialOperationsController {
   async getAllOperationsInMonth(@Body() dto: GetMonthOperations, @Req() req) {
     this.financialOperationsService.setUserId(req.user.id)
     return await this.financialOperationsService.getAllMonthOperations(dto)
+  }
+
+  @ApiOperation({ summary: 'Фин. операции по заметке', operationId: 'getOperationsByNote' })
+  @ApiResponse({ status: 200, type: [SingularFinancialOperation] })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @Post('get-operations-by-note')
+  async getOperationsByNote(@Body() idDto: IdDto, @Req() req) {
+    this.financialOperationsService.setUserId(req.user.id)
+    return await this.financialOperationsService.getOperationsByNote(idDto)
+  }
+
+  @ApiOperation({ summary: 'Удалить разовую операцию', operationId: 'deleteSingularOperation' })
+  @ApiResponse({ status: 200, type: Boolean })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @Post('delete-singular-operation')
+  async deleteSingularOperation(@Body() idDto: IdDto, @Req() req) {
+    this.financialOperationsService.setUserId(req.user.id)
+    return await this.financialOperationsService.deleteSingularOperation(idDto)
   }
 }

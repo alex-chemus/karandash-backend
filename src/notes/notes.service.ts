@@ -4,8 +4,10 @@ import { Note } from './notes.model';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { Op } from 'sequelize';
 import { DateRangeDto } from './dto/date-range.dto';
-import { NoteIdDto } from './dto/note-id.dto';
 import { EditNoteDto } from './dto/edit-note.dto';
+import { SingularFinancialOperation } from 'src/financial-operations/models/singular-financial-operation.model';
+import { NoteViewDto } from './dto/note-view.dto';
+import { IdDto } from 'src/shared/dto/id.dto';
 
 @Injectable()
 export class NotesService {
@@ -33,12 +35,15 @@ export class NotesService {
     });
   }
 
-  async getNoteById({ id }: NoteIdDto) {
-    return await this.notesRepo.findOne({ where: { id, userId: this.userId } });
+  async viewNote({ id }: IdDto): Promise<NoteViewDto> {
+    return await this.notesRepo.findOne({
+      where: { id, userId: this.userId},
+      include: [SingularFinancialOperation]
+    });
   }
 
-  async deleteNoteById({ id }: NoteIdDto) {
-    await this.notesRepo.destroy({ where: { id, userId: this.userId } });
+  async deleteNoteById({ id }: IdDto) {
+    await await this.notesRepo.destroy({ where: { id, userId: this.userId } });
   }
 
   async editNote(noteDto: EditNoteDto) {

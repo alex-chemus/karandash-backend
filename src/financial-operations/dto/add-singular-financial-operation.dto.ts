@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsBoolean, IsNumber, IsString } from "class-validator";
 
 export class AddSingularFinancialOperationDto {
@@ -17,4 +17,8 @@ export class AddSingularFinancialOperationDto {
   @IsString({ message: 'Должно быть строкой' })
   @ApiProperty({ example: 'Стипа)))', description: 'Название' })
   readonly name: string;
+
+  @ApiPropertyOptional({ example: 1, description: 'ID заметки' })
+  @IsNumber()
+  readonly noteId?: number;
 }

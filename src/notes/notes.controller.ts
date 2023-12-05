@@ -2,11 +2,12 @@ import { Body, Controller, HttpCode, NotFoundException, Post, Req, UseGuards } f
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { DateRangeDto } from './dto/date-range.dto';
-import { NoteIdDto } from './dto/note-id.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Note } from './notes.model';
 import { EditNoteDto } from './dto/edit-note.dto';
+import { NoteViewDto } from './dto/note-view.dto';
+import { IdDto } from 'src/shared/dto/id.dto';
 
 @ApiTags('Notes')
 @Controller('notes')
@@ -35,15 +36,15 @@ export class NotesController {
     return await this.notesService.getNotesInDateRange(rangeDto);
   }
 
-  @ApiOperation({ summary: 'Вернуть заметку по ID', operationId: 'getNoteById' })
-  @ApiResponse({ status: 200, type: Note })
+  @ApiOperation({ summary: 'Вернуть заметку по ID', operationId: 'view-note' })
+  @ApiResponse({ status: 200, type: NoteViewDto })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
-  @Post('get-note-by-id')
-  async getNoteById(@Body() noteDto: NoteIdDto, @Req() req) {
+  @Post('view-note')
+  async getNoteById(@Body() noteDto: IdDto, @Req() req) {
     this.notesService.setUserId(req.user.id)
-    const note = await this.notesService.getNoteById(noteDto);
+    const note = await this.notesService.viewNote(noteDto);
     if (note === null) throw new NotFoundException('Заметки не существует')
     else return note
   }
@@ -54,7 +55,7 @@ export class NotesController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Post('delete-note-by-id')
-  async deleteNoteById(@Body() noteDto: NoteIdDto, @Req() req) {
+  async deleteNoteById(@Body() noteDto: IdDto, @Req() req) {
     this.notesService.setUserId(req.user.id)
     return this.notesService.deleteNoteById(noteDto)
   }

@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { Note } from "src/notes/notes.model";
 import { User } from "src/users/users.model";
 
 interface SingularFinancialOperationCreationAttrs {
@@ -28,9 +29,9 @@ export class SingularFinancialOperation extends Model<SingularFinancialOperation
   @Column({ type: DataType.BOOLEAN, allowNull: false })
   isIncome: boolean;
 
-  @ApiProperty({ example: '1', description: 'Дата' })
+  @ApiProperty({ example: 'YYYY-MM-DD', description: 'Дата' })
   @Column({ type: DataType.DATE, allowNull: false })
-  date: number;
+  date: string;
 
   @ApiProperty({ example: 'Стипа)))', description: 'Название' })
   @Column({ type: DataType.STRING, allowNull: false })
@@ -40,6 +41,13 @@ export class SingularFinancialOperation extends Model<SingularFinancialOperation
   @ForeignKey(() => User)
   userId: number;
 
+  @ApiProperty({ example: '1', description: 'ID заметки' })
+  @ForeignKey(() => Note)
+  noteId?: number;
+
   @BelongsTo(() => User, 'userId')
   user: User;
+
+  @BelongsTo(() => Note, 'noteId')
+  note: Note;
 }
